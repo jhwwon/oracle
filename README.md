@@ -1,2 +1,2 @@
 # oracle
-oracle 학습용 repository
+Oracle learning repository
