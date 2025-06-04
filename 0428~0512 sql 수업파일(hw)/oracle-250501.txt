@@ -1,0 +1,146 @@
+-- 5월 1일 수업 내용 
+-- 테이블 복사(새로운 테이블에 기존 테이블의 데이터를 똑같이 복사)
+-- (CREATE TABLE [스키마명]. 테이블명 AS SELECT 컬럼1, 컬럼2, ... (*(모든 컬럼)) FROM 복사할 테이블명)
+DROP TABLE ex2_9;
+
+CREATE TABLE ex2_9 (
+	num1	NUMBER,
+	CONSTRAINTS check1 check( num1 BETWEEN 1 AND 9),   -- num1의 컬럼값은 1~9까지만 허용
+	gender  varchar2(10),
+	CONSTRAINTS check2 check( gender IN ('MALE', 'FEMALE') ) -- gender의 컬럼값은 'MALE', 'FEMALE'만 허용
+);
+
+INSERT INTO ex2_9 values(5, 'FEMALE');
+INSERT INTO ex2_9 values(6, 'MALE');
+
+SELECT * FROM ex2_9;
+
+-- 테이블 ex2_9를 ex2_9_1로 테이블을 생성하여 데이터를 모두 복사
+
+CREATE TABLE ex2_9_1 AS SELECT * FROM ex2_9;
+
+SELECT * FROM ex2_9_1;
+
+CREATE TABLE ex2_9_2 AS SELECT * FROM ex2_9;
+
+SELECT * FROM ex2_9_2;
+
+-- VIEW 생성하기 
+-- CREATE OR REPLACE VIEW [스키마명].뷰이름 AS SELECT 문장(컬럼1, 컬럼2) FROM 테이블들...[WHERE 조건식]
+-- VIEW 조회하기
+-- SELECT 컬럼명1, ... FROM 뷰이름
+
+CREATE OR REPLACE VIEW ex2_9_v1 AS SELECT num1 FROM ex2_9;
+
+SELECT * FROM ex2_9_v1;
+SELECT num1 FROM ex2_9_v1;
+SELECT gender FROM ex2_9_v1; -- error(ex2_9_v1 뷰는 gender를 가지고 있지 않기 때문에, 위에서 num1만 뷰로 생성했기 때문에)
+
+-- VIEW 삭제하기
+-- DROP VIEW [스키마명].뷰이름
+
+DROP VIEW ex2_9_v1;
+
+
+-- chapter2장 문제1, 90페이지 1번 문제 
+CREATE TABLE ORDERS (  -- "ORDER"로 선언해도 됨 테이블명이나 컬럼명도 ""로 선언가능(확실하게 지정할 수 있음)
+	ORDER_ID		NUMBER(12,0) PRIMARY KEY, 
+	ORDER_DATE		DATE,
+	ORDER_MODE		VARCHAR2(8 BYTE), 
+	CUSTOMER_ID 	NUMBER(6,0),    --0은 소수점 이하는 없다라는 의미
+	ORDER_STATUS	NUMBER(2,0),
+	ORDER_TOTAL		NUMBER(8,2) DEFAULT 0,
+	SALES_REP_ID	NUMBER(6,0),
+	PROMOTION_ID    NUMBER(6,0),
+--	CONSTRAINT PK_ORDERS PRIMARY key(ORDER_ID)
+	CONSTRAINT checktest check(ORDER_MODE IN ('direct', 'online'))
+);
+
+-- order_id는 기본 키이므로 INSERT 시 반드시 포함해야 함
+-- DEFAULT는 말그대로 값이 기본으로 지정되어있기 때문에 선언을 안해줘도 됨
+insert INTO ORDERS(ORDER_ID,CUSTOMER_ID) values (5,123456);  -- CUSTOMER_ID의 값이 123,456으로 표시되는 이유 
+
+SELECT * FROM ORDERS;
+
+--2번 문제 
+CREATE TABLE ORDER_ITEMS (
+	ORDER_ID		NUMBER(12,0),
+	LINE_ITEM_ID	NUMBER(3,0), 
+	PRODUCT_ID		NUMBER(3,0),
+	UNIT_PRICE		NUMBER(8,2) DEFAULT 0,
+	QUANTITY		NUMBER(8,0) DEFAULT 0,
+	CONSTRAINT PK_ORDER_ITEMS PRIMARY KEY (ORDER_ID, LINE_ITEM_ID) -- 제약을 두겠다는 의미로 CONSTRAINT를 씀
+);
+
+INSERT INTO ORDER_ITEMS(ORDER_ID, LINE_ITEM_ID) VALUES (123456789111,400);
+
+SELECT * FROM ORDER_ITEMS;
+
+--3번 문제
+CREATE TABLE PROMOTIONS (
+	PROMO_ID		NUMBER(6,0),
+	PROMO_NAME		VARCHAR2(20),
+	CONSTRAINT  PK_PROMOTIONS PRIMARY KEY (PROMO_ID)
+);
+
+INSERT INTO PROMOTIONS(PROMO_ID) VALUES (678900);
+
+SELECT *FROM PROMOTIONS;
+
+
+CREATE TABLE TEST(
+	NUM1 VARCHAR2(10) PRIMARY KEY,
+	NUM2 VARCHAR2(10) 
+);
+
+INSERT INTO TEST(NUM1,NUM2) VALUES ('CC','BB');
+
+SELECT * FROM TEST;
+
+
+-- 시퀀스(SEQUENCE) 생성하는 방법
+-- CREATE SEQUENCE [스키마명].시퀀스명 INCREMENT BY 증감숫자 START WITH 시작숫자 (P83참고)
+
+-- my_seq1 시퀀스 생성   NOCYCLE 1000에 도달하면 사이클에 도달하지 않고 멈춘다 
+CREATE SEQUENCE my_seq1 INCREMENT BY 1 START WITH 1 MINVALUE 1 MAXVALUE 999999999 NOCYCLE NOCACHE;
+
+DROP TABLE ex2_8;
+
+CREATE TABLE ex2_8 (
+	col1    varchar2(10)    PRIMARY KEY,   -- col1의 값들은 unique하며 NOT null이어야 한다.
+	col2    varchar2(10)    
+);
+
+-- my_seq1 시퀀스 사용1(my_seq1.NEXTVAL 현재값의 1 더한 값)
+INSERT INTO ex2_8 (col1) VALUES (my_seq1.NEXTVAL);
+
+SELECT * FROM ex2_8;
+
+-- my_seq1의 현재값 확인(my_seq1.CURRVAL)
+SELECT my_seq1.currval FROM dual;
+
+INSERT INTO ex2_8 (col1, col2) VALUES (my_seq1.nextval, '홍길동');  -- 보통 번호를 넣지 않고 시퀀스를 많이 사용함
+INSERT INTO ex2_8 (col1, col2) VALUES (my_seq1.nextval, '유관순');
+
+-- 시퀀스 삭제(DROP SEQUENCE [스키마명].시퀀스명)
+DROP SEQUENCE my_seq1;
+
+-- chapter2장 문제5, 90페이지
+CREATE SEQUENCE ORDERS_SEQ  
+MINVALUE 1 
+MAXVALUE 99999999
+INCREMENT BY 1 
+START WITH 1000 
+NOCACHE  
+NOCYCLE;
+
+CREATE TABLE ORDERS_SEQTEST (
+	col1    varchar2(10)    PRIMARY KEY,   -- col1의 값들은 unique하며 NOT null이어야 한다.
+	col2    varchar2(10)    
+);
+
+INSERT INTO ORDERS_SEQTEST (col1) VALUES (ORDERS_SEQ.NEXTVAL);
+
+SELECT * FROM ORDERS_SEQTEST;
+
+SELECT ORDERS_SEQ.currval FROM dual;

@@ -1,0 +1,38 @@
+-- MariaDB 테이블 이름 testtable1 생성
+create table testtable1 (
+	column1 char(10),-- 엑셀에서 A열을 의미 (column1)
+	column2 varchar(10), -- varchar2는 없음, 10개 이하까지 허용 
+	column3 int          -- 숫자는 int로 
+);
+
+-- testtable1 데이터 입력
+insert into testtable1 (column1, column2)  VALUES('abc', 'abc');
+
+-- testtable1 테이블에 들어간 데이터 조회
+SELECT column1, LENGTH(column1) AS Len1, -- oracle은 비어있는 값까지 가져오지만 MariaDB는 있는 값만 가져옴
+	   column2, LENGTH(column2) AS Len2
+FROM testtable1;
+
+-- 테이블 ex2_2 생성
+CREATE TABLE ex2_2 (
+	column1 varchar(9) 
+);
+
+-- 테이블 ex2_2에 데이터 입력
+INSERT into ex2_2(column1) VALUES('abc');
+
+SELECT column1, LENGTH(column1) AS Len1
+FROM ex2_2;
+
+desc ex2_2;
+
+describe testtable1;
+
+-- MariaDB에서 현재시간 가져오기 
+select now();
+
+''   ""    ``
+
+create table `order` (
+
+)

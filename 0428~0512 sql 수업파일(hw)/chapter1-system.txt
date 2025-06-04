@@ -1,0 +1,15 @@
+-- '--'는 SQL 주석을 뜻함
+
+-- Oracle 19c에 사용자 생성을 위한 스크립트 코드
+ALTER SESSION SET "_ORACLE_SCRIPT" = TRUE;
+
+-- Oracle 사용자 생성(id: jhw1,  pw: 1234)
+CREATE USER jhw1 IDENTIFIED BY 1234;
+
+-- 롤(권한) 부여
+GRANT CONNECT, RESOURCE, DBA TO jhw1;
+-- GRANT INSERT ON jhw1.ex2_1 TO jhw1;
+-- GRANT CREATE VIEW TO jhw1;
+
+-- 데이터 저장이 가능하도록 테이블스페이스 조정
+ALTER USER jhw1 DEFAULT TABLESPACE users quota unlimited ON users;
